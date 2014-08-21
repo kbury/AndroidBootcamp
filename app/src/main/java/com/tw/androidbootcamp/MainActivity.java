@@ -7,8 +7,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -31,6 +35,15 @@ public class MainActivity extends Activity {
             }
         });
 
+
+        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
+                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2" };
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this.getApplicationContext(),R.)
     }
 
 
