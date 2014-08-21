@@ -12,7 +12,13 @@ public class SecondActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String test = getIntent().getExtras().getString("TEST");
+        String test = "Hello World";
+
+        try {
+            test = getIntent().getExtras().getString("TEST");
+        } catch (Exception e) {
+
+        }
 
         setContentView(R.layout.activity_second);
         TextView tv = (TextView) findViewById(R.id.text);
