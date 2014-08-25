@@ -12,8 +12,8 @@ public class SecondActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+
+        String title = getIntent().getExtras().getString("title");
+        setTitle(title);
     }
-
-
-
 }

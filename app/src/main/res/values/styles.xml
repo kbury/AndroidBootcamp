@@ -5,4 +5,17 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="ListItem">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="ListItem_Title">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ListItem_Subtitle">
+
+    </style>
+
 </resources>
