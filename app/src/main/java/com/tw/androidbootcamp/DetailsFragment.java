@@ -42,4 +42,9 @@ public class DetailsFragment extends Fragment {
         return view;
     }
 
+
+    public void updateView(long restaurantId) {
+        TextView tvRestId = (TextView) getView().findViewById(R.id.tv_details_rest_id);
+        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
+    }
 }

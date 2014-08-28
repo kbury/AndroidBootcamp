@@ -1,6 +1,7 @@
 package com.tw.androidbootcamp;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -24,20 +25,30 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
             listFragment = new ListFragment();
         }
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
-                .commit();
+        if(findViewById(R.id.new_layout1)== null)
+        {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
+                    .commit();
+        }
+
     }
 
     @Override
     public void onFragmentInteraction(long restaurantId) {
         Log.i(LOG_TAG, "onFragmentInteraction");
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
-                .commit();
+        if(findViewById(R.id.new_layout1)== null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
+                    .commit();
+        }else{
+            DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.new_layout2);
+            details.updateView(restaurantId);
+
+        }
 
     }
 }
