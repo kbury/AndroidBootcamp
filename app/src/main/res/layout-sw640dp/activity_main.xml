@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment android:name="com.tw.androidbootcamp.ListFragment"
+    <fragment android:title="com.tw.androidbootcamp.ListFragment"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_list" />
 
-    <fragment android:name="com.tw.androidbootcamp.DetailsFragment"
+    <fragment android:title="com.tw.androidbootcamp.DetailsFragment"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"

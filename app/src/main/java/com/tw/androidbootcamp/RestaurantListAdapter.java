@@ -45,10 +45,15 @@ public class RestaurantListAdapter extends BaseAdapter {
 
         Restaurant restaurant = (Restaurant) getItem(position);
         ((TextView)view.findViewById(R.id.tv_item_rest_id)).setText(String.valueOf(restaurant.getId()));
-        ((TextView)view.findViewById(R.id.tv_item_rest_name)).setText(String.valueOf(restaurant.getName()));
+        ((TextView)view.findViewById(R.id.tv_item_rest_name)).setText(String.valueOf(restaurant.getTitle()));
 
         view.setTag(restaurant);
 
         return view;
+    }
+
+    public void setRestaurants(List<Restaurant> restaurants) {
+        restaurantList.clear();
+        restaurantList.addAll(restaurants);
     }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.UUID;
+
 
 public class MainActivity extends Activity implements InteractionListeners.OnFragmentInteractionListener {
 

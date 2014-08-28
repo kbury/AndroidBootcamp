@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+
 public class DetailsFragment extends Fragment {
     private static final String ARG_RESTAURANT_ID = "restaurantId";
 
