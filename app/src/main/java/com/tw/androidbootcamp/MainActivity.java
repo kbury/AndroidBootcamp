@@ -25,11 +25,11 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
             listFragment = new ListFragment();
         }
 
-        if(findViewById(R.id.new_layout1)== null)
+        if(findViewById(R.id.left_fragment)== null)
         {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
+                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_DETAILS)
                     .commit();
         }
 
@@ -39,13 +39,13 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
     public void onFragmentInteraction(long restaurantId) {
         Log.i(LOG_TAG, "onFragmentInteraction");
 
-        if(findViewById(R.id.new_layout1)== null) {
+        if(findViewById(R.id.left_fragment)== null) {
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
                     .commit();
         }else{
-            DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.new_layout2);
+            DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.right_fragment);
             details.updateView(restaurantId);
 
         }
