@@ -29,7 +29,7 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
         {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_DETAILS)
+                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
                     .commit();
         }
 
