@@ -1,47 +1,53 @@
 package com.tw.androidbootcamp;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.util.Log;
 
+import java.util.UUID;
 
-public class MainActivity extends Activity implements BlankFragment.OnFragmentInteractionListener {
+public class MainActivity extends Activity implements InteractionListeners.OnFragmentInteractionListener {
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final String TAG_FRAGMENT_LIST = "fragment_list";
+    private static final String TAG_FRAGMENT_DETAILS = "fragment_details";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_main);
 
-        final String[] titles = new String[]{"List Item 1", "List Item 2", "List Item 3", "List Item 4",
-                "List Item 5", "List Item 6", "List Item 7", "List Item 8", "List Item 9"};
+        ListFragment listFragment = (ListFragment) getFragmentManager().findFragmentByTag(TAG_FRAGMENT_LIST);
+        if (null == listFragment) {
+            listFragment = new ListFragment();
+        }
 
-        String[] subtitles = new String[]{"Subtitle 1", "Subtitle 2", "Subtitle 3", "Subtitle 4",
-                "Subtitle 5", "Subtitle 6", "Subtitle 7", "Subtitle 8", "Subtitle 9"};
+        if(findViewById(R.id.left_fragment)== null)
+        {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
+                    .commit();
+        }
 
-        ListView listView = (ListView) findViewById(R.id.main_list_view);
-
-        ListAdapter listAdapter = new ArrayAdapter(MainActivity.this, R.layout.list_item, R.id.title, titles);
-        listView.setAdapter(listAdapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), SecondActivity.class);
-                intent.putExtra("title", titles[i]);
-                startActivity(intent);
-            }
-        });
     }
 
-
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        // switch fragment A for fragment B
+    public void onFragmentInteraction(long restaurantId) {
+        Log.i(LOG_TAG, "onFragmentInteraction");
+
+        if(findViewById(R.id.left_fragment)== null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
+                    .commit();
+        }else{
+            DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.right_fragment);
+            details.updateView(restaurantId);
+
+        }
+
     }
 }
