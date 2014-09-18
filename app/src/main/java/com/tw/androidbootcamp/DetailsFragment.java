@@ -7,6 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 
 public class DetailsFragment extends Fragment {
     private static final String ARG_RESTAURANT_ID = "restaurantId";
@@ -29,6 +35,20 @@ public class DetailsFragment extends Fragment {
         if (getArguments() != null) {
             restaurantId = getArguments().getLong(ARG_RESTAURANT_ID);
         }
+//               GoogleMap map = ((MapFragment) getFragmentManager()
+//                .findFragmentById(R.id.location_map)).getMap();
+//
+//        LatLng sydney = new LatLng(-33.867, 151.206);
+//
+//        map.setMyLocationEnabled(true);
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
+//
+//        map.addMarker(new MarkerOptions()
+//                .title("Sydney")
+//                .snippet("The most populous city in Australia.")
+//                .position(sydney));
+
+
     }
 
     @Override
@@ -38,6 +58,21 @@ public class DetailsFragment extends Fragment {
 
         TextView tvRestId = (TextView) view.findViewById(R.id.tv_details_rest_id);
         tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
+
+        GoogleMap map = ((MapFragment) getFragmentManager()
+                .findFragmentById(R.id.location_map)).getMap();
+
+        LatLng sydney = new LatLng(-33.867, 151.206);
+
+
+        map.setMyLocationEnabled(true);
+        map.animateCamera(CameraUpdateFactory.zoomIn());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
+
+        map.addMarker(new MarkerOptions()
+                .title("Sydney")
+                .snippet("The most populous city in Australia.")
+                .position(sydney));
 
         return view;
     }

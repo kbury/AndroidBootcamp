@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ListFragment extends Fragment {
     private static final String LOG_TAG = ListFragment.class.getSimpleName();
 
     private InteractionListeners.OnFragmentInteractionListener mListener;
-    private List<Restaurant> restaurants = new ArrayList<Restaurant>();
+    private List<Restaurant> restaurantList = new ArrayList<Restaurant>();
     private RestaurantListAdapter adapter;
 
     public ListFragment() {
@@ -47,7 +48,7 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        adapter = new RestaurantListAdapter(getActivity(), restaurants);
+        adapter = new RestaurantListAdapter(getActivity(), restaurantList);
 
         ListView list = (ListView) view.findViewById(R.id.list);
         list.setAdapter(adapter);
@@ -57,6 +58,18 @@ public class ListFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Restaurant restaurant = (Restaurant) view.getTag();
                 onRestaurantClicked(restaurant.getId());
+            }
+        });
+
+        Button button = (Button)view.findViewById(R.id.seeMap);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.placeholder, MarkerClusterFragment.newInstance(restaurantList), "fragment_marker_cluster")
+                        .commit();
             }
         });
 
@@ -93,6 +106,7 @@ public class ListFragment extends Fragment {
             @Override
             public void success(List<Restaurant> restaurants, Response response) {
                 Log.d(LOG_TAG, "Success");
+                restaurantList = restaurants;
                 adapter.setRestaurants(restaurants);
                 adapter.notifyDataSetChanged();
             }

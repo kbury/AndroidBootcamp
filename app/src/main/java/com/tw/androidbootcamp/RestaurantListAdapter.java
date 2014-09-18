@@ -1,5 +1,6 @@
 package com.tw.androidbootcamp;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,7 @@ public class RestaurantListAdapter extends BaseAdapter {
         Restaurant restaurant = (Restaurant) getItem(position);
         ((TextView)view.findViewById(R.id.tv_item_rest_id)).setText(String.valueOf(restaurant.getId()));
         ((TextView)view.findViewById(R.id.tv_item_rest_name)).setText(String.valueOf(restaurant.getTitle()));
+
 
         view.setTag(restaurant);
 

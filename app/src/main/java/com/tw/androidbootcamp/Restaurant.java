@@ -1,11 +1,14 @@
 package com.tw.androidbootcamp;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.io.Serializable;
 
 /**
  * Created by kbury on 21/08/2014.
  */
-public class Restaurant implements Serializable{
+public class Restaurant implements Serializable, ClusterItem{
 
     private long id;
     private String title;
@@ -41,4 +44,8 @@ public class Restaurant implements Serializable{
         return userId;
     }
 
+    @Override
+    public LatLng getPosition() {
+        return new LatLng((33.867-id)+10,(151.206-id)+100);
+    }
 }
