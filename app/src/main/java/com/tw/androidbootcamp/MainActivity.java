@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import java.util.UUID;
 
@@ -30,9 +31,24 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.placeholder, listFragment, TAG_FRAGMENT_LIST)
+                    .addToBackStack(TAG_FRAGMENT_LIST)
                     .commit();
         }
 
+        getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayShowHomeEnabled(true);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getFragmentManager().popBackStack();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -43,6 +59,7 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
+                    .addToBackStack(TAG_FRAGMENT_DETAILS)
                     .commit();
         }else{
             DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.right_fragment);
