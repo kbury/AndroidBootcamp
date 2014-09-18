@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,11 +19,14 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,6 +38,8 @@ public class DetailsFragment extends Fragment {
     private long restaurantId;
     private Uri fileUri;
     private ImageView ivPhoto;
+    private GoogleMap map;
+    private Marker marker;
 
     public static DetailsFragment newInstance(long restaurantId) {
         DetailsFragment fragment = new DetailsFragment();
@@ -75,13 +81,14 @@ public class DetailsFragment extends Fragment {
         });
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        GoogleMap map = mapFragment.getMap();
+        map = mapFragment.getMap();
 
         LatLng latlng = new LatLng(-33.863, 151.208);
         map.animateCamera(CameraUpdateFactory.zoomIn());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16));
 
-        map.addMarker(new MarkerOptions().position(latlng));
+        marker = map.addMarker(new MarkerOptions().position(latlng));
+        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
         return view;
     }
@@ -113,6 +120,20 @@ public class DetailsFragment extends Fragment {
                 if (ivPhoto != null) {
                     Bitmap bmp = BitmapFactory.decodeFile(fileUri.getPath());
                     ivPhoto.setImageBitmap(bmp);
+
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bmp, 50, 50, false)));
+
+                    try {
+                        ExifInterface exif = new ExifInterface(fileUri.getPath());
+
+                        float[] output = new float[2];
+                        exif.getLatLong(output);
+
+                        marker.setPosition(new LatLng(output[0], output[1]));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
         }
     }
