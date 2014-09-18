@@ -7,6 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 
 public class DetailsFragment extends Fragment {
     private static final String ARG_RESTAURANT_ID = "restaurantId";
@@ -38,6 +45,15 @@ public class DetailsFragment extends Fragment {
 
         TextView tvRestId = (TextView) view.findViewById(R.id.tv_details_rest_id);
         tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        GoogleMap map = mapFragment.getMap();
+
+        LatLng latlng = new LatLng(-33.863, 151.208);
+        map.animateCamera(CameraUpdateFactory.zoomIn());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16));
+
+        map.addMarker(new MarkerOptions().position(latlng));
 
         return view;
     }
