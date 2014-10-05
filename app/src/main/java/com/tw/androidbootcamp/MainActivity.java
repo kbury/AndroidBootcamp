@@ -52,18 +52,18 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
     }
 
     @Override
-    public void onFragmentInteraction(long restaurantId) {
+    public void onFragmentInteraction(Restaurant restaurant) {
         Log.i(LOG_TAG, "onFragmentInteraction");
 
         if(findViewById(R.id.left_fragment)== null) {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.placeholder, DetailsFragment.newInstance(restaurantId))
+                    .replace(R.id.placeholder, DetailsFragment.newInstance(restaurant))
                     .addToBackStack(TAG_FRAGMENT_DETAILS)
                     .commit();
         }else{
             DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.right_fragment);
-            details.updateView(restaurantId);
+            details.updateView(restaurant);
 
         }
 

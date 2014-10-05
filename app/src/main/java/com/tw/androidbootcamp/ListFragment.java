@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Select;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,21 +36,27 @@ public class ListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        adapter = new RestaurantListAdapter(getActivity(), restaurants);
+
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://jsonplaceholder.typicode.com")
                 .build();
 
-        MyService service = restAdapter.create(MyService.class);
-
-        service.getRestaurants(getCallback());
+        List<Restaurant> retrievedRestList = new Select().from(Restaurant.class).execute();
+        if(retrievedRestList.isEmpty())
+        {
+            MyService service = restAdapter.create(MyService.class);
+            service.getRestaurants(getCallback());
+        }
+        else {
+            updateAdapter(retrievedRestList);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-
-        adapter = new RestaurantListAdapter(getActivity(), restaurants);
 
         ListView list = (ListView) view.findViewById(R.id.list);
         list.setAdapter(adapter);
@@ -56,18 +65,18 @@ public class ListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Restaurant restaurant = (Restaurant) view.getTag();
-                onRestaurantClicked(restaurant.getId());
+                onRestaurantClicked(restaurant);
             }
         });
 
         return view;
     }
 
-    public void onRestaurantClicked(long restaurantId) {
+    public void onRestaurantClicked(Restaurant restaurant) {
         if (mListener != null) {
             Log.i(LOG_TAG, "onRestaurantClicked");
 
-            mListener.onFragmentInteraction(restaurantId);
+            mListener.onFragmentInteraction(restaurant);
         }
     }
 
@@ -93,8 +102,9 @@ public class ListFragment extends Fragment {
             @Override
             public void success(List<Restaurant> restaurants, Response response) {
                 Log.d(LOG_TAG, "Success");
-                adapter.setRestaurants(restaurants);
-                adapter.notifyDataSetChanged();
+
+                SaveRestaurantsToDb(restaurants);
+                updateAdapter(restaurants);
             }
 
             @Override
@@ -102,6 +112,25 @@ public class ListFragment extends Fragment {
                 Log.e(LOG_TAG, "Error", retrofitError);
             }
         };
+    }
+
+    private void updateAdapter(List<Restaurant> restaurants)  {
+        adapter.setRestaurants(restaurants);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void SaveRestaurantsToDb(List<Restaurant> restaurants) {
+        ActiveAndroid.beginTransaction();
+        try {
+            for (Restaurant rest : restaurants) {
+
+                rest.save();
+            }
+            ActiveAndroid.setTransactionSuccessful();
+        }
+        finally {
+            ActiveAndroid.endTransaction();
+        }
     }
 
 }

@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -32,19 +31,19 @@ import java.util.Date;
 
 
 public class DetailsFragment extends Fragment {
-    private static final String ARG_RESTAURANT_ID = "restaurantId";
+    private static final String ARG_RESTAURANT = "restaurant";
     private static final int CAMERA_ACTIVITY = 1;
 
-    private long restaurantId;
+    private Restaurant restaurant;
     private Uri fileUri;
     private ImageView ivPhoto;
     private GoogleMap map;
     private Marker marker;
 
-    public static DetailsFragment newInstance(long restaurantId) {
+    public static DetailsFragment newInstance(Restaurant restaurant) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_RESTAURANT_ID, restaurantId);
+        args.putSerializable(ARG_RESTAURANT, restaurant);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,7 +54,7 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            restaurantId = getArguments().getLong(ARG_RESTAURANT_ID);
+            restaurant = (Restaurant) getArguments().getSerializable(ARG_RESTAURANT);
         }
     }
 
@@ -65,9 +64,17 @@ public class DetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
 
         TextView tvRestId = (TextView) view.findViewById(R.id.tv_details_rest_id);
-        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
+        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurant));
 
         ivPhoto = (ImageView) view.findViewById(R.id.picture);
+
+        Restaurant restWithPhoto = Helpers.Load(getActivity(), restaurant);
+        if (null != restWithPhoto && null != restWithPhoto.getImgUrl()) {
+            String path = restWithPhoto.getImgUrl().getPath();
+            Bitmap bmp = BitmapFactory.decodeFile(path);
+            ivPhoto.setImageBitmap(bmp);
+        }
+
         ivPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,6 +125,10 @@ public class DetailsFragment extends Fragment {
         switch(requestCode) {
             case CAMERA_ACTIVITY:
                 if (ivPhoto != null) {
+                    restaurant.setImgUrl(fileUri);
+
+                    Helpers.Save(getActivity(), restaurant);
+
                     Bitmap bmp = BitmapFactory.decodeFile(fileUri.getPath());
                     ivPhoto.setImageBitmap(bmp);
 
@@ -138,8 +149,8 @@ public class DetailsFragment extends Fragment {
         }
     }
 
-    public void updateView(long restaurantId) {
+    public void updateView(Restaurant restaurant) {
         TextView tvRestId = (TextView) getView().findViewById(R.id.tv_details_rest_id);
-        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
+        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurant.getId()));
     }
 }
