@@ -3,6 +3,7 @@ package com.tw.androidbootcamp.model;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.google.android.gms.maps.model.LatLng;
 
 @Table(name = "Restaurant")
 public class Restaurant extends Model {
@@ -15,6 +16,12 @@ public class Restaurant extends Model {
 
     @Column(name = "imageUrl")
     private String imageUrl;
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
 
     public Restaurant() {}
 
@@ -45,5 +52,21 @@ public class Restaurant extends Model {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
