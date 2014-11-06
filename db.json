@@ -1,0 +1,26 @@
+{
+  "restaurants": [
+    {
+      "id": 1,
+      "name": "Mary's",
+      "address": "6 Mary St, Newtown NSW 2042"
+    },
+    {
+      "id": 2,
+      "name": "Chur Burger",
+      "address": "48 Albion St, Surry Hills NSW 2010"
+    },
+    {
+      "id": 3,
+      "name": "Hoocie Mamma Cafe",
+      "address": "156 Missenden Rd, Newtown NSW 2042"
+    },
+    {
+      "id": 4,
+      "name": "Jazz City BBQ",
+      "address": "200 Goulburn St, Surry Hills NSW 2010"
+    }
+  ],
+  "favicon.ico": [],
+  "db": []
+}

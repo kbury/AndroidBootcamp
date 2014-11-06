@@ -1,4 +1,4 @@
-package com.tw.androidbootcamp;
+package com.tw.androidbootcamp.services;
 
 import com.tw.androidbootcamp.model.Restaurant;
 
@@ -8,6 +8,6 @@ import retrofit.Callback;
 import retrofit.http.GET;
 
 public interface RestaurantService {
-    @GET("/albums")
+    @GET("/restaurants")
     void getRestaurants(Callback<List<Restaurant>> callback);
 }

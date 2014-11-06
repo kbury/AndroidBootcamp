@@ -1,19 +1,17 @@
 package com.tw.androidbootcamp;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.tw.androidbootcamp.model.Restaurant;
+import com.tw.androidbootcamp.services.RestaurantService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +37,12 @@ public class RestaurantListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        RestAdapter restAdapter = new RestAdapter.Builder()
-//                .setEndpoint("http://jsonplaceholder.typicode.com")
-//                .build();
-//
-//        RestaurantService service = restAdapter.create(RestaurantService.class);
-//        service.getRestaurants(getCallback());
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://10.241.125.137:3000") // change this to your local IP address
+                .build();
+
+        RestaurantService service = restAdapter.create(RestaurantService.class);
+        service.getRestaurants(getCallback());
     }
 
     @Override
@@ -53,22 +51,11 @@ public class RestaurantListFragment extends ListFragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         List<Restaurant> restaurantList = new Select().all().from(Restaurant.class).execute();
-        if(restaurantList.size() == 0) {
-            Restaurant restaurant1 = new Restaurant("Chur Burger", "48 Albion St, Surry Hills NSW 2010");
-            Restaurant restaurant2 = new Restaurant("Mary's", "6 Mary St, Newtown NSW 2042");
-            restaurant1.save();
-            restaurant2.save();
-
-            restaurants.add(restaurant1);
-            restaurants.add(restaurant2);
-        } else {
-            for(Restaurant r : restaurantList) {
-                restaurants.add(r);
-            }
+        for (Restaurant r : restaurantList) {
+            restaurants.add(r);
         }
 
         adapter = new RestaurantListAdapter(getActivity(), restaurants);
-
         setListAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -78,7 +65,16 @@ public class RestaurantListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Restaurant restaurant = (Restaurant) v.getTag();
-        onRestaurantClicked(restaurant.getId());
+
+        if(restaurant != null) {
+            Long restaurantId = restaurant.getId();
+
+            if (restaurantId != null) {
+                onRestaurantClicked(restaurantId);
+            } else {
+                onRestaurantClicked(id);
+            }
+        }
     }
 
     public void onRestaurantClicked(long restaurantId) {
