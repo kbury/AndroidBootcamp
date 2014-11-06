@@ -30,19 +30,17 @@ public class RestaurantListFragment extends ListFragment {
     private RestaurantListAdapter adapter;
 
     public RestaurantListFragment() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://10.241.125.137:3000") // change this to your local IP address
                 .build();
 
         RestaurantService service = restAdapter.create(RestaurantService.class);
         service.getRestaurants(getCallback());
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -107,6 +105,8 @@ public class RestaurantListFragment extends ListFragment {
             @Override
             public void success(List<Restaurant> restaurants, Response response) {
                 Log.d(LOG_TAG, "Success");
+                adapter = new RestaurantListAdapter(getActivity(), restaurants);
+                setListAdapter(adapter);
                 adapter.setRestaurants(restaurants);
                 adapter.notifyDataSetChanged();
             }

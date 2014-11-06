@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.activeandroid.query.Select;
 import com.tw.androidbootcamp.model.Restaurant;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class RestaurantListAdapter extends BaseAdapter {
 
     private final LayoutInflater inflater;
-    private final List<Restaurant> restaurantList;
+    private List<Restaurant> restaurantList;
 
     public RestaurantListAdapter(Context context, List<Restaurant> restaurantList) {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,8 +62,10 @@ public class RestaurantListAdapter extends BaseAdapter {
         restaurantList.clear();
 
         for (Restaurant r : restaurants) {
-            r.save();
+            if(new Select().from(Restaurant.class).where("name = '" + r.getName() + "'").executeSingle() == null) {
+                r.save();
+            }
         }
-        restaurantList.addAll(restaurants);
+        restaurantList = new Select().all().from(Restaurant.class).execute();
     }
 }
