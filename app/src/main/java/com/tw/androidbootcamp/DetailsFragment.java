@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.tw.androidbootcamp.model.Restaurant;
 import com.tw.androidbootcamp.services.PictureService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,14 +77,22 @@ public class DetailsFragment extends Fragment {
         Intent resultIntent = new Intent(context, MainActivity.class);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent aResultIntent = new Intent(context, MainActivity.class);
+        PendingIntent aPendingIntent = PendingIntent.getActivity(context, 0, aResultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent bResultIntent = new Intent(context, MainActivity.class);
+        PendingIntent bPendingIntent = PendingIntent.getActivity(context, 0, bResultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(restaurant.getName())
                         .setContentText("You are " + distance + "km away!")
                         .setVibrate(new long[]{800, 800})
-                        .extend(new NotificationCompat.WearableExtender().addAction(mapAction));
-//                        .extend(new NotificationCompat.WearableExtender().addAction(voiceAction));
+                        .setLargeIcon(BitmapFactory.decodeFile(restaurant.getImageUrl()))
+                        .addAction(android.R.drawable.ic_dialog_email, getString(R.string.map), aPendingIntent)
+                        .addAction(android.R.drawable.ic_lock_lock, getString(R.string.map), bPendingIntent)
+                        .extend(new NotificationCompat.WearableExtender().addActions(Arrays.asList(mapAction, voiceAction)));
 
 
         notificationBuilder.setContentIntent(resultPendingIntent);
@@ -106,7 +117,7 @@ public class DetailsFragment extends Fragment {
                 PendingIntent.getActivity(getActivity(), 0, replyIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        return new NotificationCompat.Action.Builder(R.drawable.icon_microphone,
+        return new NotificationCompat.Action.Builder(android.R.drawable.ic_btn_speak_now,
                 getString(R.string.label), replyPendingIntent)
                 .addRemoteInput(remoteInput)
                 .build();
