@@ -11,5 +11,6 @@
     <string name="restaurantURL">http://jsonplaceholder.typicode.com</string>
 
     <string name="MenuItem_TakePicture">Take Picture</string>
+    <string name="map">Open Map</string>
 
 </resources>

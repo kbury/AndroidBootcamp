@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -68,12 +69,18 @@ public class DetailsFragment extends Fragment {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
+        String uri = "http://maps.google.com/maps?mode=driving&daddr=" + restaurant.getAddress();
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        PendingIntent mapPendingIntent = PendingIntent.getActivity(context, 0, mapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(restaurant.getName())
                         .setContentText("You are " + distance + "km away!")
-                        .setVibrate(new long[]{800, 800});
+                        .setVibrate(new long[]{800, 800})
+                        .addAction(android.R.drawable.ic_dialog_map,
+                                getString(R.string.map), mapPendingIntent);
 
 
         notificationBuilder.setContentIntent(resultPendingIntent);
