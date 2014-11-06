@@ -2,6 +2,7 @@ package com.tw.androidbootcamp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.activeandroid.Model;
+import com.activeandroid.query.Select;
+import com.tw.androidbootcamp.model.Restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,28 +23,28 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ListFragment extends Fragment {
+public class RestaurantListFragment extends ListFragment {
 
-    private static final String LOG_TAG = ListFragment.class.getSimpleName();
+    private static final String LOG_TAG = RestaurantListFragment.class.getSimpleName();
 
     private InteractionListeners.OnFragmentInteractionListener mListener;
     private List<Restaurant> restaurants = new ArrayList<Restaurant>();
     private RestaurantListAdapter adapter;
 
-    public ListFragment() {
+    public RestaurantListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://jsonplaceholder.typicode.com")
-                .build();
-
-        MyService service = restAdapter.create(MyService.class);
-
-        service.getRestaurants(getCallback());
+//        RestAdapter restAdapter = new RestAdapter.Builder()
+//                .setEndpoint("http://jsonplaceholder.typicode.com")
+//                .build();
+//
+//        RestaurantService service = restAdapter.create(RestaurantService.class);
+//        service.getRestaurants(getCallback());
     }
 
     @Override
@@ -47,20 +52,33 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
+        List<Restaurant> restaurantList = new Select().all().from(Restaurant.class).execute();
+        if(restaurantList.size() == 0) {
+            Restaurant restaurant1 = new Restaurant("Chur Burger", "48 Albion St, Surry Hills NSW 2010");
+            Restaurant restaurant2 = new Restaurant("Mary's", "6 Mary St, Newtown NSW 2042");
+            restaurant1.save();
+            restaurant2.save();
+
+            restaurants.add(restaurant1);
+            restaurants.add(restaurant2);
+        } else {
+            for(Restaurant r : restaurantList) {
+                restaurants.add(r);
+            }
+        }
+
         adapter = new RestaurantListAdapter(getActivity(), restaurants);
 
-        ListView list = (ListView) view.findViewById(R.id.list);
-        list.setAdapter(adapter);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Restaurant restaurant = (Restaurant) view.getTag();
-                onRestaurantClicked(restaurant.getId());
-            }
-        });
+        setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         return view;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Restaurant restaurant = (Restaurant) v.getTag();
+        onRestaurantClicked(restaurant.getId());
     }
 
     public void onRestaurantClicked(long restaurantId) {

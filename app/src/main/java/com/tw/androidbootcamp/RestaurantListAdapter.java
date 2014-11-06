@@ -7,11 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.tw.androidbootcamp.model.Restaurant;
+
 import java.util.List;
 
-/**
- * Created by kbury on 21/08/2014.
- */
 public class RestaurantListAdapter extends BaseAdapter {
 
     private final LayoutInflater inflater;
@@ -35,7 +34,13 @@ public class RestaurantListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return restaurantList.get(position).getId();
+        Restaurant restaurant = restaurantList.get(position);
+
+        if(restaurant != null && restaurant.getId() != null) {
+            return restaurant.getId();
+        } else {
+            return position;
+        }
     }
 
     @Override
@@ -44,8 +49,8 @@ public class RestaurantListAdapter extends BaseAdapter {
         View view = inflater.inflate(R.layout.list_item_restaurant, viewGroup, false);
 
         Restaurant restaurant = (Restaurant) getItem(position);
-        ((TextView)view.findViewById(R.id.tv_item_rest_id)).setText(String.valueOf(restaurant.getId()));
-        ((TextView)view.findViewById(R.id.tv_item_rest_name)).setText(String.valueOf(restaurant.getTitle()));
+        ((TextView)view.findViewById(R.id.restaurant_name)).setText(String.valueOf(restaurant.getName()));
+        ((TextView)view.findViewById(R.id.restaurant_address)).setText(String.valueOf(restaurant.getAddress()));
 
         view.setTag(restaurant);
 
