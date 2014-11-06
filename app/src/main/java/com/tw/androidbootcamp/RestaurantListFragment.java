@@ -48,6 +48,7 @@ public class RestaurantListFragment extends ListFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
+        restaurants.clear();
         List<Restaurant> restaurantList = new Select().all().from(Restaurant.class).execute();
         for (Restaurant r : restaurantList) {
             restaurants.add(r);

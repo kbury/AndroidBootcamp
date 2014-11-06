@@ -16,9 +16,11 @@ import java.util.Date;
 public class PictureService {
     private final Activity activity;
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private final String identifier;
     private Uri fileUri;
 
-    public PictureService(Activity mainActivity) {
+    public PictureService(Activity mainActivity, String identifier) {
+        this.identifier = identifier.replace(" ", "_");
         this.activity = mainActivity;
     }
 
@@ -33,7 +35,7 @@ public class PictureService {
         activity.startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
-    public static File getOutputMediaFile() {
+    public File getOutputMediaFile() {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
@@ -50,7 +52,7 @@ public class PictureService {
         String timeStamp = new SimpleDateFormat("yyyy_MM_dd").format(new Date());
 
         return new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_" + timeStamp + ".jpg");
+                identifier + "_IMG_" + timeStamp + ".jpg");
     }
 
     public String getPath() {

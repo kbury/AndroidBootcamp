@@ -1,5 +1,6 @@
 package com.tw.androidbootcamp;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.PendingIntent;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.RemoteInput;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import java.util.Locale;
 
 public class DetailsFragment extends Fragment {
     private static final String ARG_RESTAURANT_ID = "restaurantId";
+    private static final String EXTRA_VOICE_REPLY = "extra_voice_reply";
 
     private long restaurantId;
 
@@ -41,15 +44,19 @@ public class DetailsFragment extends Fragment {
         return fragment;
     }
 
-    public DetailsFragment() {
-    }
+    public DetailsFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getActivity().getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+
         if (getArguments() != null) {
             restaurantId = getArguments().getLong(ARG_RESTAURANT_ID);
             Restaurant restaurant = Restaurant.load(Restaurant.class, restaurantId);
+            actionBar.setTitle(restaurant.getName());
 
             Activity context = getActivity();
             int distance = Math.round(getDistance(restaurant))/1000;
@@ -60,18 +67,12 @@ public class DetailsFragment extends Fragment {
 
     private void createNotification(Restaurant restaurant, Activity context, int distance) {
         int notificationId = 001;
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(
-                        context,
-                        0,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
 
-        String uri = "http://maps.google.com/maps?mode=driving&daddr=" + restaurant.getAddress();
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        PendingIntent mapPendingIntent = PendingIntent.getActivity(context, 0, mapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Action voiceAction = getVoiceAction();
+        NotificationCompat.Action mapAction = getMapAction(restaurant, context);
+
+        Intent resultIntent = new Intent(context, MainActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context)
@@ -79,22 +80,42 @@ public class DetailsFragment extends Fragment {
                         .setContentTitle(restaurant.getName())
                         .setContentText("You are " + distance + "km away!")
                         .setVibrate(new long[]{800, 800})
-                        .addAction(android.R.drawable.ic_dialog_map,
-                                getString(R.string.map), mapPendingIntent);
+                        .extend(new NotificationCompat.WearableExtender().addAction(mapAction));
+//                        .extend(new NotificationCompat.WearableExtender().addAction(voiceAction));
 
 
         notificationBuilder.setContentIntent(resultPendingIntent);
-
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(context);
-
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(notificationId, notificationBuilder.build());
+    }
+
+    private NotificationCompat.Action getMapAction(Restaurant restaurant, Activity context) {
+        String uri = "http://maps.google.com/maps?mode=driving&daddr=" + restaurant.getAddress();
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        PendingIntent mapPendingIntent = PendingIntent.getActivity(context, 0, mapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Action.Builder(android.R.drawable.ic_dialog_map,
+                getString(R.string.map), mapPendingIntent)
+                .build();
+    }
+
+    private NotificationCompat.Action getVoiceAction() {
+        RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY).build();
+        Intent replyIntent = new Intent(getActivity(), MainActivity.class);
+        PendingIntent replyPendingIntent =
+                PendingIntent.getActivity(getActivity(), 0, replyIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Action.Builder(R.drawable.icon_microphone,
+                getString(R.string.label), replyPendingIntent)
+                .addRemoteInput(remoteInput)
+                .build();
     }
 
     private float getDistance(Restaurant restaurant) {
         Location restaurantLocation = new Location("Restaurant");
         if(restaurant.getLatitude() == 0) {
-            LatLng latLng = getLatLng(restaurant);
+            LatLng latLng = getRestaurantLatLng(restaurant);
             restaurant.setLatitude(latLng.latitude);
             restaurant.setLongitude(latLng.longitude);
             restaurant.save();
@@ -113,22 +134,29 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
+        Restaurant restaurant = Restaurant.load(Restaurant.class, restaurantId);
 
         setupImageCaptureView(view);
-
-        setupMapView();
+        setupMapView(restaurant);
+        setupImageView(view, restaurant);
 
         return view;
     }
 
-    private void setupMapView() {
-        Restaurant restaurant = Restaurant.load(Restaurant.class, restaurantId);
+    private void setupImageView(View view, Restaurant restaurant) {
+        ImageView imageView = (ImageView) view.findViewById(R.id.restaurant_image);
+        if(restaurant.getImageUrl() != null) {
+            imageView.setImageURI(Uri.parse(restaurant.getImageUrl()));
+        }
+    }
+
+    private void setupMapView(Restaurant restaurant) {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         GoogleMap map = mapFragment.getMap();
         LatLng latlng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
 
         if (restaurant.getLatitude() == 0) {
-            latlng = getLatLng(restaurant);
+            latlng = getRestaurantLatLng(restaurant);
         }
 
         map.animateCamera(CameraUpdateFactory.zoomIn());
@@ -139,7 +167,7 @@ public class DetailsFragment extends Fragment {
         restaurant.setLongitude(latlng.longitude);
     }
 
-    private LatLng getLatLng(Restaurant restaurant) {
+    private LatLng getRestaurantLatLng(Restaurant restaurant) {
         LatLng latlng;
         double lat = 0.0, lng = 0.0;
 
@@ -164,20 +192,16 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 takePicture();
+                view.invalidate();
             }
         });
     }
 
-    public void updateView(long restaurantId) {
-//        TextView tvRestId = (TextView) getView().findViewById(R.id.tv_details_rest_id);
-//        tvRestId.setText(String.format("You are viewing details for restaurant %s", restaurantId));
-    }
-
     public void takePicture() {
-        PictureService service = new PictureService(getActivity());
+        Restaurant restaurant = Restaurant.load(Restaurant.class, restaurantId);
+        PictureService service = new PictureService(getActivity(), restaurant.getName());
         service.takePicture();
 
-        Restaurant restaurant = Restaurant.load(Restaurant.class, restaurantId);
         restaurant.setImageUrl(service.getPath());
         restaurant.save();
     }

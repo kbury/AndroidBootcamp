@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,22 +19,18 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
     private static final String TAG_FRAGMENT_LIST = "fragment_list";
     private static final String TAG_FRAGMENT_DETAILS = "fragment_details";
 
-    private final PictureService pictureService = new PictureService(this);
+    private final PictureService pictureService = new PictureService(this, "");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RestaurantListFragment restaurantListFragment = (RestaurantListFragment) getFragmentManager().findFragmentById(R.id.list);
-        if (null == restaurantListFragment) {
-            restaurantListFragment = new RestaurantListFragment();
-        }
-
         if (findViewById(R.id.list_fragment) == null) {
+            RestaurantListFragment firstFragment = new RestaurantListFragment();
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, restaurantListFragment, TAG_FRAGMENT_LIST)
+                    .replace(R.id.fragment_container, firstFragment, TAG_FRAGMENT_LIST)
                     .addToBackStack(null)
                     .commit();
         }
@@ -45,15 +42,14 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
         Log.i(LOG_TAG, "onFragmentInteraction");
 
         if (findViewById(R.id.list_fragment) == null) {
+            DetailsFragment detailsFragment = new DetailsFragment();
+            detailsFragment.setArguments(getIntent().getExtras());
+
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, DetailsFragment.newInstance(restaurantId))
                     .addToBackStack(null)
                     .commit();
-        } else {
-            DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.details_fragment);
-            details.updateView(restaurantId);
-
         }
 
     }
@@ -89,4 +85,11 @@ public class MainActivity extends Activity implements InteractionListeners.OnFra
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (getFragmentManager().getBackStackEntryCount() == 0)
+            finish();
+    }
 }

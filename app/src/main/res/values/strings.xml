@@ -12,5 +12,6 @@
 
     <string name="MenuItem_TakePicture">Take Picture</string>
     <string name="map">Open Map</string>
+    <string name="label">Speak Now</string>
 
 </resources>
